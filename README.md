@@ -52,14 +52,15 @@ if all_notes:
         print(f"Note Title: {note.title}")
 else:
     print("Failed to fetch notes.")
-Remember to replace "your_note_id", "your_parent_note_id", "your_template_id", and "your_root_note_id" with actual Slite note IDs.
 ```
+
+Remember to replace "your_note_id", "your_parent_note_id", "your_template_id", and "your_root_note_id" with actual Slite note IDs.
 
 ## Features
 
-Get Note: Retrieves a single note by its ID.
-Create Note: Creates a new note with specified parent, template, title, and markdown content.
-Fetch Notes Recursively: Retrieves a note and all its children recursively.
+- Get Note: Retrieves a single note by its ID.
+- Create Note: Creates a new note with specified parent, template, title, and markdown content.
+- Fetch Notes Recursively: Retrieves a note and all its children recursively.
 
 ## Error Handling
 

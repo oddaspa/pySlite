@@ -15,8 +15,7 @@ limitations under the License.
 """
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field, validator
-
+from pydantic import BaseModel
 
 
 class NoteInfo(BaseModel):
@@ -27,10 +26,6 @@ class NoteInfo(BaseModel):
     url: str
     attributes: Optional[List[str]] = None
     columns: Optional[List[str]] = None
-
-    @validator("updatedAt")
-    def parse_datetime(cls, value):
-        return datetime.fromisoformat(value.replace('Z', '+00:00'))
 
 
 class NotesResponse(BaseModel):

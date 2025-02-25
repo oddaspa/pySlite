@@ -2,7 +2,6 @@ from typing import Optional
 from pydantic import BaseModel, validator
 
 
-
 class Tile(BaseModel):
     title: str = ""
     iconURL: Optional[str] = None
@@ -11,8 +10,9 @@ class Tile(BaseModel):
     url: Optional[str] = None
     content: Optional[str] = None
 
-    @validator("*")
-    def check_status(cls, v, field):
-        if field.name == "colorHex" and v and not cls.__fields__.get("label"):
-            raise ValueError("Can not have colorHex without label.")
+    @validator("colorHex")
+    def check_colorhex_and_label(cls, v):
+        if v and not cls.label:  # Access label directly from the class
+            raise ValueError("colorHex cannot be set without label.")
         return v
+
