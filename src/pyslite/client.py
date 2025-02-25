@@ -89,7 +89,7 @@ class Client:
             "title": title,
             "parentNoteId": parent_note_id,
             "templateId": template_id,
-            "content": content,
+            "markdown": content,
         }
         try:
             response = requests.post(url, json=payload, headers=self.headers)
