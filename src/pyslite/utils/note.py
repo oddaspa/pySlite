@@ -1,9 +1,6 @@
-import dataclasses
 from datetime import datetime
-import json
-from dataclasses import dataclass, field
 from typing import List
-
+from pydantic import BaseModel, validator
 from typing import Optional
 
 from enum import Enum
@@ -13,42 +10,32 @@ class ReviewState(Enum):
   Outdated = "Outdated"
   VerificationRequested = "VerificationRequested"
 
-@dataclass
-class Note:
-  updatedAt: datetime
-  columns: Optional[List]
-  attributes: Optional[List]
-  url: str
-  parentNoteId: str
-  title: str
-  id: str
-  content: str
-  reviewState: Optional[ReviewState] = None
+
+class Note(BaseModel):
+    updatedAt: datetime
+    url: str
+    parentNoteId: str
+    title: str
+    id: str
+    content: Optional[str] = None  # content can be missing
+    reviewState: Optional[ReviewState] = None
+    columns: Optional[List[str]] = None
+    attributes: Optional[List[str]] = None
+    
+    @validator("updatedAt")
+    def parse_datetime(cls, value):
+        return datetime.fromisoformat(value.replace('Z', '+00:00'))
 
 
-  def __post_init__(self):
-    if self.columns and self.attributes:
-      print("ITS A COLLECTION")
-      self.collection = True
-
-
-  def show(self):
-    try:
-      from IPython import display, get_ipython
-      get_ipython()
-      if self.content:
-        content = f"#{self.title}\n" + self.content
-        display.display(display.Markdown(content))
-      else:
-        return "No Content"
-    except:
-      print(self.title)
-      print(self.content)
-
-
-  def json(self):
-    clean_dict = {}
-    for key,value in dataclasses.asdict(self).items():
-      if value:
-        clean_dict[key] = value
-    return json.dumps(dataclasses.asdict(self))
+    def show(self):
+      try:
+        from IPython import display, get_ipython
+        get_ipython()
+        if self.content:
+          content = f"#{self.title}\n" + self.content
+          display.display(display.Markdown(content))
+        else:
+          return "No Content"
+      except:
+        print(self.title)
+        print(self.content)

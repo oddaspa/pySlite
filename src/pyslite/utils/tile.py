@@ -1,31 +1,18 @@
-import json
-from dataclasses import dataclass, asdict
 from typing import Optional
+from pydantic import BaseModel, validator
 
 
-@dataclass
-class Tile:
-  title: str = ""
-  iconURL: str = None
-  colorHex: str = None
-  label: str = None
-  url: str = None
-  content: str = None
 
-  def __post_init__(self):
-    if self.colorHex and not self.label:
-      raise ValueError("Can not have status without label.")
+class Tile(BaseModel):
+    title: str = ""
+    iconURL: Optional[str] = None
+    colorHex: Optional[str] = None
+    label: Optional[str] = None
+    url: Optional[str] = None
+    content: Optional[str] = None
 
-
-  def json(self):
-    clean_dict = {}
-    status = {}
-    for key,value in asdict(self).items():
-      if value:
-        if key in ["label", "colorHex"]:
-          status[key] = value
-        else:
-          clean_dict[key] = value
-    if status:
-      clean_dict["status"] = status
-    return json.dumps(asdict(self))
+    @validator("*")
+    def check_status(cls, v, field):
+        if field.name == "colorHex" and v and not cls.__fields__.get("label"):
+            raise ValueError("Can not have colorHex without label.")
+        return v

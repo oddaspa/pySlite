@@ -16,7 +16,8 @@ limitations under the License.
 import requests
 from requests import Response
 from .utils.note import Note
-from typing import Optional
+from .utils.notes_response import NotesResponse  # Import NotesResponse
+from typing import Optional, List
 
 
 class Client:
@@ -102,3 +103,43 @@ class Client:
         except ValueError as e:
             print(f"Error parsing JSON response when creating note: {e}")
             return None
+
+    def fetch_notes_recursive(self, note_id: str) -> List[Note]:
+        """
+        Recursively fetches all child notes of a given note.
+
+        Args:
+            note_id: The ID of the parent note.
+
+        Returns:
+            A list of Note objects, including the parent note and all its descendants.
+
+        Raises:
+            requests.exceptions.RequestException: If there's an error during the HTTP request.
+            ValueError: If there's an error parsing the JSON response.
+        """
+        url = self.base_url + f"notes/{note_id}/children"
+        try:
+            response = requests.get(url, headers=self.headers)
+            response.raise_for_status()
+            response_data = NotesResponse(**response.json())
+
+            all_notes: List[Note] = []
+            # Add parent note.
+            parent_note = self.get_note(note_id)
+            if parent_note:
+                all_notes.append(parent_note)
+            # Recursivly loop through children.
+            if response_data.total > 0:
+                for child in response_data.notes:
+                    child_id = child.id
+                    child_notes = self.fetch_notes_recursive(child_id)
+                    all_notes.extend(child_notes)
+            return all_notes
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching children of note {note_id}: {e}")
+            return []
+        except ValueError as e:
+            print(f"Error parsing JSON response when fetching children of note {note_id}: {e}")
+            return []
+
