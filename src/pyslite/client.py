@@ -47,10 +47,10 @@ class Client:
         self.base_url = "https://api.slite.com/v1/"
         self.session = requests.Session()
         retries = Retry(
+            
             total=max_retries,
             backoff_factor=backoff_factor,
-            status_forcelist=[429, 500, 502, 503, 504],  # Retry on these status codes
-            method_whitelist=["HEAD", "GET", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"],
+            status_forcelist=[429, 500, 502, 503, 504]  # Retry on these status codes
         )
         self.session.mount("https://", HTTPAdapter(max_retries=retries))
 
